@@ -52,7 +52,7 @@ The app combines a lightweight vanilla JavaScript interface with a Node.js/Expre
 
 ```bash
 git clone https://github.com/AdaSevvalSari/Subscription-Radar.git
-cd subscription-Radar/backend
+cd Subscription-Radar/backend
 npm install
 npm start
 ```
@@ -102,7 +102,7 @@ The test suite covers subscription calculations, category summaries, usage revie
 ## Project Structure
 
 ```text
-subscription-radar/
+Subscription-Radar/
 ├── .github/workflows/
 │   └── lint.yml
 ├── backend/
@@ -124,10 +124,14 @@ subscription-radar/
 │   │       ├── categoryService.js
 │   │       ├── subscriptionService.js
 │   │       └── usageService.js
-│   └── tests/
-│       ├── categoryService.test.js
-│       ├── subscriptionService.test.js
-│       └── usageService.test.js
+│   ├── tests/
+│   │   ├── categoryService.test.js
+│   │   ├── subscriptionService.test.js
+│   │   └── usageService.test.js
+│   ├── .env.example
+│   ├── .eslintrc.json
+│   ├── package-lock.json
+│   └── package.json
 └── frontend/
     ├── index.html
     ├── style.css
