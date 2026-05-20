@@ -52,7 +52,7 @@ The app combines a lightweight vanilla JavaScript interface with a Node.js/Expre
 
 ```bash
 git clone https://github.com/AdaSevvalSari/Subscription-Radar.git
-cd subscription-radar/backend
+cd subscription-Radar/backend
 npm install
 npm start
 ```
