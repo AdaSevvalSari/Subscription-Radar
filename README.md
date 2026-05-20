@@ -51,7 +51,7 @@ The app combines a lightweight vanilla JavaScript interface with a Node.js/Expre
 ## Quick Start
 
 ```bash
-git clone https://github.com/YOUR_USERNAME/subscription-radar.git
+git clone https://github.com/AdaSevvalSari/Subscription-Radar.git
 cd subscription-radar/backend
 npm install
 npm start
@@ -108,6 +108,7 @@ subscription-radar/
 ├── backend/
 │   ├── src/
 │   │   ├── app.js
+│   │   ├── config.js
 │   │   ├── db/
 │   │   │   ├── database.js
 │   │   │   └── schema.sql
