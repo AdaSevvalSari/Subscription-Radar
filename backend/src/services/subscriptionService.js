@@ -9,12 +9,19 @@ function calculateMonthlyEquivalent(price, billingCycle) {
 }
 
 function calculateRenewalDate(startDate, billingCycle) {
+  const date = new Date(startDate);
+  if (billingCycle === 'monthly') date.setMonth(date.getMonth() + 1);
+  else if (billingCycle === 'annual') date.setFullYear(date.getFullYear() + 1);
+  else if (billingCycle === 'weekly') date.setDate(date.getDate() + 7);
+  return date.toISOString().split('T')[0];
+}
+
+function calculateNextFutureRenewalDate(startDate, billingCycle) {
   const today = new Date();
   today.setHours(0, 0, 0, 0);
 
   const date = new Date(startDate + 'T12:00:00');
 
-  // Advance until the renewal date is strictly in the future
   while (date <= today) {
     if (billingCycle === 'monthly') date.setMonth(date.getMonth() + 1);
     else if (billingCycle === 'annual') date.setFullYear(date.getFullYear() + 1);
@@ -104,7 +111,7 @@ function getAllSubscriptions(filters = {}, userId) {
   const today = new Date().toISOString().split('T')[0];
   subscriptions.forEach(s => {
     if (s.status === 'active' && s.renewal_date < today) {
-      const newDate = calculateRenewalDate(s.start_date, s.billing_cycle);
+      const newDate = calculateNextFutureRenewalDate(s.start_date, s.billing_cycle);
       db.prepare('UPDATE subscriptions SET renewal_date = ? WHERE id = ?').run(newDate, s.id);
       s.renewal_date = newDate;
     }
@@ -126,7 +133,7 @@ function getSubscriptionById(id, userId) {
 
 function createSubscription(data, userId) {
   const db = getDb();
-  const renewalDate = calculateRenewalDate(data.start_date, data.billing_cycle);
+  const renewalDate = calculateNextFutureRenewalDate(data.start_date, data.billing_cycle);
 
   const result = db.prepare(`
     INSERT INTO subscriptions (user_id, name, price, billing_cycle, start_date, renewal_date, category_id, status, notes)
@@ -153,7 +160,7 @@ function updateSubscription(id, data, userId) {
 
   const startDate = data.start_date || existing.start_date;
   const billingCycle = data.billing_cycle || existing.billing_cycle;
-  const renewalDate = calculateRenewalDate(startDate, billingCycle);
+  const renewalDate = calculateNextFutureRenewalDate(startDate, billingCycle);
 
   db.prepare(`
     UPDATE subscriptions
