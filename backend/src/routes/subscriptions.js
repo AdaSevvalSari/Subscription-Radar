@@ -57,7 +57,7 @@ router.get('/summary', (req, res) => {
  *         name: status
  *         schema:
  *           type: string
- *           enum: [active, paused, cancelled]
+ *           enum: [active, cancelled]
  *     responses:
  *       200:
  *         description: List of subscriptions
@@ -137,7 +137,7 @@ router.get('/:id', (req, res) => {
  *                 type: integer
  *               status:
  *                 type: string
- *                 enum: [active, paused, cancelled]
+ *                 enum: [active, cancelled]
  *               notes:
  *                 type: string
  *     responses:

@@ -9,10 +9,19 @@ function calculateMonthlyEquivalent(price, billingCycle) {
 }
 
 function calculateRenewalDate(startDate, billingCycle) {
-  const date = new Date(startDate);
-  if (billingCycle === 'monthly') date.setMonth(date.getMonth() + 1);
-  else if (billingCycle === 'annual') date.setFullYear(date.getFullYear() + 1);
-  else if (billingCycle === 'weekly') date.setDate(date.getDate() + 7);
+  const today = new Date();
+  today.setHours(0, 0, 0, 0);
+
+  const date = new Date(startDate + 'T12:00:00');
+
+  // Advance until the renewal date is strictly in the future
+  while (date <= today) {
+    if (billingCycle === 'monthly') date.setMonth(date.getMonth() + 1);
+    else if (billingCycle === 'annual') date.setFullYear(date.getFullYear() + 1);
+    else if (billingCycle === 'weekly') date.setDate(date.getDate() + 7);
+    else break;
+  }
+
   return date.toISOString().split('T')[0];
 }
 
@@ -59,7 +68,7 @@ function validateSubscription(data) {
   if (isNaN(Number(data.price)) || Number(data.price) < 0) errors.push('Price must be a valid positive number.');
   if (!['monthly', 'annual', 'weekly'].includes(data.billing_cycle)) errors.push('Billing cycle must be monthly, annual, or weekly.');
   if (!data.start_date || isNaN(Date.parse(data.start_date))) errors.push('A valid start date is required.');
-  if (data.status && !['active', 'paused', 'cancelled'].includes(data.status)) errors.push('Status must be active, paused, or cancelled.');
+  if (data.status && !['active', 'cancelled'].includes(data.status)) errors.push('Status must be active or cancelled.');
   return errors;
 }
 
@@ -89,7 +98,19 @@ function getAllSubscriptions(filters = {}, userId) {
   }
 
   query += ' ORDER BY s.renewal_date ASC';
-  return db.prepare(query).all(...params);
+  const subscriptions = db.prepare(query).all(...params);
+
+  // Auto-refresh stale renewal dates for active subscriptions
+  const today = new Date().toISOString().split('T')[0];
+  subscriptions.forEach(s => {
+    if (s.status === 'active' && s.renewal_date < today) {
+      const newDate = calculateRenewalDate(s.start_date, s.billing_cycle);
+      db.prepare('UPDATE subscriptions SET renewal_date = ? WHERE id = ?').run(newDate, s.id);
+      s.renewal_date = newDate;
+    }
+  });
+
+  return subscriptions;
 }
 
 function getSubscriptionById(id, userId) {

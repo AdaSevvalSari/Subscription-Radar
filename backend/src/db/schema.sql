@@ -22,7 +22,7 @@ CREATE TABLE IF NOT EXISTS subscriptions (
   start_date TEXT NOT NULL,
   renewal_date TEXT NOT NULL,
   category_id INTEGER REFERENCES categories(id) ON DELETE SET NULL,
-  status TEXT NOT NULL DEFAULT 'active' CHECK(status IN ('active', 'paused', 'cancelled')),
+  status TEXT NOT NULL DEFAULT 'active' CHECK(status IN ('active', 'cancelled')),
   notes TEXT,
   created_at TEXT NOT NULL DEFAULT (datetime('now'))
 );
