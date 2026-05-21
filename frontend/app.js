@@ -1,4 +1,4 @@
-const API = 'http://localhost:3001/api';
+const API = 'http://localhost:3000/api';
 
 // ============================================================
 // SERVICE CATALOG
@@ -307,7 +307,7 @@ function cycleLabelShort(cycle) {
 }
 
 function statusLabel(s) {
-  return { active: 'Active', paused: 'Paused', cancelled: 'Cancelled' }[s] || s;
+  return { active: 'Active', cancelled: 'Cancelled' }[s] || s;
 }
 
 function daysUntil(dateStr) {
@@ -688,8 +688,8 @@ function renderSubsGrid(subs, hasFilters) {
       </div>
 
       <div class="sub-renewal">
-        <span class="sub-renewal-date">Renews ${renewalDate}</span>
-        ${urgentBadge || (renewRelative ? `<span class="sub-renewal-relative">${renewRelative}</span>` : '')}
+        <span class="sub-renewal-date">${s.status === 'cancelled' ? 'Active until' : 'Renews'} ${renewalDate}</span>
+        ${s.status !== 'cancelled' ? (urgentBadge || (renewRelative ? `<span class="sub-renewal-relative">${renewRelative}</span>` : '')) : ''}
       </div>
 
       ${catPill}
@@ -894,7 +894,6 @@ function openSubForm(existing = null) {
           <label for="sub-status">Status</label>
           <select id="sub-status" name="status">
             <option value="active"    ${!existing || existing.status === 'active'    ? 'selected' : ''}>Active</option>
-            <option value="paused"    ${existing  && existing.status === 'paused'    ? 'selected' : ''}>Paused</option>
             <option value="cancelled" ${existing  && existing.status === 'cancelled' ? 'selected' : ''}>Cancelled</option>
           </select>
         </div>
@@ -1923,7 +1922,6 @@ function _renderWizardStep3() {
           <label for="wiz-status">Status</label>
           <select id="wiz-status" name="status">
             <option value="active">Active</option>
-            <option value="paused">Paused</option>
             <option value="cancelled">Cancelled</option>
           </select>
         </div>
